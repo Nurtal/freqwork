@@ -3,6 +3,10 @@
 
 ## Paper
 
+### Annotation
+Dl annotation benchmark dataset
+test freq approach for benchmark
+
 ### Scat transform and spatial
 S'inspirer du papier d'astro pour faire de l'extraction / analyse de data de spatial transcriptomique,
 faut choper du benchmark et tout défonser
