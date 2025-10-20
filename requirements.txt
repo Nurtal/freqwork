@@ -1,1 +1,3 @@
 scanpy
+pyarrow
+polars
