@@ -1,3 +1,4 @@
 scanpy
 pyarrow
 polars
+requests
