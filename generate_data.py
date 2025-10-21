@@ -22,14 +22,14 @@ def generate_random_data(n_cells:int, n_genes:int, file_name:str) -> None:
     df = pd.DataFrame(expression, columns=gene_names)
 
     # add cell id
-    df.index = [f"cell_{i+1}" for i in range(n_cells)]
+    df['ID'] = [f"cell_{i+1}" for i in range(n_cells)]
 
     # add random labels
     cell_types = ["T_cell", "B_cell", "Monocyte", "NK_cell"]
     df["LABEL"] = np.random.choice(cell_types, size=n_cells)
 
     # save
-    df.to_parquet(file_name)
+    df.to_parquet(file_name, index=False)
 
 
 

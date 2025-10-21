@@ -10,7 +10,7 @@ def build_random_order(data_file:str) -> dict:
         - data_file (str) path to the data file (should be .parquet)
 
     Returns:
-        - (dict) : results with two keys : order and distances
+        - (dict) : results with two keys : order and positions
     
     """
 
@@ -28,10 +28,13 @@ def build_random_order(data_file:str) -> dict:
             gene_list.append(c)
     gene_list = np.random.permutation(gene_list)
 
-    # create random distances
+    # create position random distances
+    positions = [0] 
     distances = [random.randint(min_dist, max_dist) for _ in range(len(gene_list) - 1)]
+    for d in distances:
+        positions.append(positions[-1] + d)
 
-    return {'order':gene_list, 'distances':distances}
+    return {'order':gene_list, 'positions':positions}
 
 
 
