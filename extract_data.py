@@ -1,6 +1,6 @@
 import scanpy as sc
 import numpy as np
-
+import pandas as pd
 
 
 def extract_data(single_cell_data_file:str, output_parquet_file:str) -> None:
@@ -15,15 +15,15 @@ def extract_data(single_cell_data_file:str, output_parquet_file:str) -> None:
     # load data
     adata = sc.read_h5ad(single_cell_data_file)
     expr = adata.X
-    
+
     # WARINING this take a lot of computer power
     # convert to dataframe
     if not isinstance(expr, np.ndarray):
         expr = expr.toarray()
-    df = pd.DataFrame(expr, index=adata.obs_names, columns=adata.var_names)
+    df = pd.DataFrame(expr, index=adata.obs_names, columns=adata.var.gene_symbols)
 
     # add cell type as label
-    df["label"] = adata.obs["cell_type"].values
+    df["label"] = adata.obs.values
 
     # save data
     df.to_parquet(output_parquet_file)
