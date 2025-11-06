@@ -14,6 +14,8 @@ def train_decision_tree(parquet_path:str, model_out:str) -> None:
     
     # Load data
     df = pd.read_parquet(parquet_path)
+    if 'ID' in list(df.keys()):
+        df = df.drop(columns=['ID'])
     X = df.drop(columns=['LABEL'])
     y = df['LABEL']
     
@@ -28,3 +30,4 @@ def train_decision_tree(parquet_path:str, model_out:str) -> None:
 if __name__ == "__main__":
 
     train_decision_tree("data/toy.parquet", "model/toy_tree.pkl")
+    train_decision_tree("/tmp/machin.parquet", "model/toy_tree_spectral.pkl")
