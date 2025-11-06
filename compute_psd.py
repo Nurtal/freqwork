@@ -3,6 +3,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import welch
 import matplotlib.pyplot as plt
+import glob
 
 
 
@@ -116,11 +117,60 @@ def spectral_embedding(freqs, Pxx, fc=None):
     return features
 
 
+def craft_spectral_dataset(frequency_folder:str, manifest:str, result_file:str) -> None:
+    """Craft spectral dataset of computed frequencies
+
+    Args:
+        - frequency_folder (str) : path to folder containing frequency files
+        - manifest (str) : path to file (.parquet) containing ID and LABEL columns
+        - result_file (str) : path to save the dataset, should be a .parquet file
+    
+    """
+
+    # extract id to label
+    id_to_label = {}
+    df = pd.read_parquet(manifest)[['ID', 'LABEL']]
+    for index, row in df.iterrows():
+        id_to_label[row['ID']] = row['LABEL']
+        
+
+    # craft data
+    data = []
+    for freq_file in glob.glob(f"{frequency_folder}/*.csv"):
+
+        # init vector
+        vector = {}
+
+        # extract ids
+        vector['ID'] = freq_file.split("/")[-1].replace('_freq.csv', '')
+
+        # compute power spectral density
+        freqs, Pxx = compute_psd(freq_file)
+
+        # compute spectral embedding
+        vector = vector | spectral_embedding(freqs, Pxx)
+
+        # add label
+        vector['LABEL'] = id_to_label[vector['ID']]
+
+        # save vector
+        data.append(vector)
+
+    # assemble data
+    df = pd.DataFrame(data)
+
+    # save
+    df.to_parquet(result_file)
+
+    
+
 
 if __name__ == "__main__":
 
-    freqs, Pxx = compute_psd("/tmp/freqtest/cell_52_freq.csv")
-    plot_psd(freqs, Pxx, "/tmp/test.png")
-    m = spectral_embedding(freqs, Pxx)    
-    print(m)
-    
+    # freqs, Pxx = compute_psd("/tmp/freqtest/cell_52_freq.csv")
+    # plot_psd(freqs, Pxx, "/tmp/test.png")
+    # m = spectral_embedding(freqs, Pxx)    
+
+    craft_spectral_dataset("/tmp/freqtest", "data/toy.parquet", "/tmp/machin.parquet")
+
+        
